@@ -1,0 +1,97 @@
+%% Question 1
+clear all
+% defining parameters -----------------------------------------------------
+n=2;
+dx=@(x) (x/2)+1;
+t0=0;
+t1=1;
+x0=3;
+% Executing Euler's Method Function ---------------------------------------
+[EulerApproximation]=EulersMethodx(n,x0,dx,t0,t1);
+%% Question 2
+clear all
+% defining parameters -----------------------------------------------------
+k=[1,2,3,4,5,6,7];
+dx=@(x) (x/2);
+t0=0;
+t1=4;
+x0=3;
+ODE=@(t)3*exp(t/2);
+maxerror=zeros(1,length(k));
+% Executing Euler's Method Function ---------------------------------------
+tiledlayout(2,1)
+nexttile
+for i=1:length(k)
+    n=10^k(i);
+    nstep(i)=n;
+    t=linspace(t0,t1,n+1);
+    [EulerApproximation]=EulersMethodx(n,x0,dx,t0,t1);
+    maxerror(i)=ODE(t(end))-EulerApproximation(end);
+    plot(t,EulerApproximation);
+    hold on
+end
+legend('k=1','k=2','k=3','k=4','k=5','k=6','k=7')
+xlabel('t')
+ylabel('Function Approximation')
+nexttile
+plot(log10(nstep),log10(maxerror))
+xlabel('log10(n)')
+ylabel('log10(maxerror)')
+%% Question 3
+% no code needed, see submission
+%% Question 4
+clear all
+% defining parameters -----------------------------------------------------
+k=17.26;
+x0=1;
+dx=@(t,x) (cos((pi*x)/2)-atan(1+k*x))*exp(-t)+sin((pi*x)/2);
+t0=0;
+t1=4;
+j=[1,2,3,4,5,6,7];
+maxerror=zeros(1,length(j)-1);
+% Executing Euler's Method Function ---------------------------------------
+tiledlayout(2,1)
+nexttile
+for r=1:length(j)
+    i=8-r
+    n=10^j(i);
+    t=linspace(t0,t1,n+1);
+    [EulerApproximation]=EulersMethodxt(n,x0,dx,t,t0,t1);
+    plot(t,EulerApproximation);
+    if i==7
+        errorcomparison=EulerApproximation(end)
+    else 
+        maxerror(i)=abs(errorcomparison-EulerApproximation(end));
+        nstep(i)=n;
+    end
+    hold on
+end
+grid on
+legend('k=7','k=6','k=5','k=4','k=3','k=2','k=1')
+xlabel('t')
+ylabel('Function Approximation')
+nexttile
+plot(log10(nstep),log10(maxerror))
+grid on
+xlabel('log10(n)')
+ylabel('log10(maxerror)')
+%% Euler's Method, x
+function [EulerApproximation]=EulersMethodx(n,x0,dx,~,t0,t1)
+    h=(t1-t0)/n;
+    x=zeros(1,n+1);
+    x(1)=x0;
+    for i=2:length(x)
+        x(i)=x(i-1)+h*dx(x(i-1));
+    end
+    EulerApproximation=x;
+end
+%% Euler's Method, x,t
+function [EulerApproximation]=EulersMethodxt(n,x0,dx,t,t0,t1)
+    h=(t1-t0)/n;
+    x=zeros(1,n+1);
+    x(1)=x0;
+    for i=2:length(x)
+        x(i)=x(i-1)+h*dx(t(i),x(i-1));
+    end
+    EulerApproximation=x;
+end
